@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EndCrypt - Image Encryption Tool</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chart.js/3.7.0/chart.min.js"></script>
+    <style>
+        .image-container {
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .image-container:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+        .navbar-brand {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            letter-spacing: 1px;
+        }
+        .loading {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(255,255,255,0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+        }
+        .spinner {
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #3498db;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen">
+    <!-- Navbar -->
+    <nav class="bg-gradient-to-r from-blue-800 to-purple-800 text-white shadow-lg">
+        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+            <div class="flex items-center">
+                <span class="navbar-brand text-xl font-bold">EndCrypt</span>
+                <span class="ml-2 text-xs bg-yellow-400 text-black px-2 py-1 rounded">by siddvaskar</span>
+            </div>
+            <div class="hidden md:flex space-x-6">
+                <a href="#" class="hover:text-yellow-300 transition-colors duration-300">Home</a>
+                <a href="#about" class="hover:text-yellow-300 transition-colors duration-300">About</a>
+                <a href="#metrics" class="hover:text-yellow-300 transition-colors duration-300">Metrics</a>
+                <a href="#contact" class="hover:text-yellow-300 transition-colors duration-300">Contact</a>
+            </div>
+            <div class="md:hidden">
+                <button id="mobile-menu-button" class="focus:outline-none">
+                    <i class="fas fa-bars text-xl"></i>
+                </button>
+            </div>
+        </div>
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="hidden md:hidden bg-blue-900 px-4 py-2">
+            <a href="#" class="block py-2 hover:text-yellow-300">Home</a>
+            <a href="#about" class="block py-2 hover:text-yellow-300">About</a>
+            <a href="#metrics" class="block py-2 hover:text-yellow-300">Metrics</a>
+            <a href="#contact" class="block py-2 hover:text-yellow-300">Contact</a>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container mx-auto px-4 py-8">
+        <!-- Hero Section -->
+        <div class="bg-white rounded-lg shadow-lg p-6 mb-8">
+            <h1 class="text-3xl font-bold text-center text-gray-800 mb-4">Image Encryption & Decryption</h1>
+            <p class="text-gray-600 text-center mb-6">Securely encrypt your images with advanced chaotic map algorithms</p>
+            
+            <!-- Upload Form -->
+            <div class="max-w-md mx-auto bg-gray-50 p-6 rounded-lg shadow">
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-bold mb-2" for="image-upload">
+                        Upload Image (256x256 pixels)
+                    </label>
+                    <input 
+                        type="file" 
+                        id="image-upload" 
+                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        accept="image/*">
+                    <p class="text-xs text-gray-500 mt-1">For best results, upload a square image with 256x256 dimensions</p>
+                </div>
+                
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-bold mb-2" for="encryption-level">
+                        Encryption Level
+                    </label>
+                    <select id="encryption-level" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <option value="1">Level 1 - Basic (Low Security)</option>
+                        <option value="2" selected>Level 2 - Standard (Medium Security)</option>
+                        <option value="3">Level 3 - Advanced (High Security)</option>
+                        <option value="4">Level 4 - Maximum (Ultra Security)</option>
+                    </select>
+                </div>
+                
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-bold mb-2" for="encryption-key">
+                        Encryption Key (0.1 - 0.9)
+                    </label>
+                    <input 
+                        type="number" 
+                        id="encryption-key" 
+                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        value="0.67"
+                        min="0.1"
+                        max="0.9"
+                        step="0.01">
+                </div>
+                
+                <div class="flex justify-center">
+                    <button id="process-button" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 transform transition hover:scale-105 disabled:opacity-50" disabled>
+                        Process Image
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Results Section -->
+        <div id="results-section" class="hidden bg-white rounded-lg shadow-lg p-6 mb-8">
+            <h2 class="text-2xl font-bold text-center text-gray-800 mb-6">Processing Results</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Original Image -->
+                <div class="relative image-container bg-gray-50 p-4 rounded-lg shadow text-center">
+                    <h3 class="text-lg font-semibold mb-2">Original Image</h3>
+                    <div class="aspect-w-1 aspect-h-1 overflow-hidden rounded-md">
+                        <img id="original-image" class="w-full h-auto object-contain" src="" alt="Original Image">
+                    </div>
+                </div>
+                
+                <!-- Encrypted Image -->
+                <div class="relative image-container bg-gray-50 p-4 rounded-lg shadow text-center">
+                    <h3 class="text-lg font-semibold mb-2">Encrypted Image</h3>
+                    <div class="aspect-w-1 aspect-h-1 overflow-hidden rounded-md">
+                        <img id="encrypted-image" class="w-full h-auto object-contain" src="" alt="Encrypted Image">
+                    </div>
+                    <button id="download-encrypted" class="mt-3 bg-green-600 hover:bg-green-700 text-white text-sm py-1 px-3 rounded-full focus:outline-none">
+                        Download
+                    </button>
+                </div>
+                
+                <!-- Decrypted Image -->
+                <div class="relative image-container bg-gray-50 p-4 rounded-lg shadow text-center">
+                    <h3 class="text-lg font-semibold mb-2">Decrypted Image</h3>
+                    <div class="aspect-w-1 aspect-h-1 overflow-hidden rounded-md">
+                        <img id="decrypted-image" class="w-full h-auto object-contain" src="" alt="Decrypted Image">
+                    </div>
+                    <button id="download-decrypted" class="mt-3 bg-green-600 hover:bg-green-700 text-white text-sm py-1 px-3 rounded-full focus:outline-none">
+                        Download
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Analytics Section -->
+        <div id="metrics" class="bg-white rounded-lg shadow-lg p-6 mb-8 hidden">
+            <h2 class="text-2xl font-bold text-center text-gray-800 mb-6">Image Analytics</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Bar Chart - PSNR & Entropy -->
+                <div class="bg-gray-50 p-4 rounded-lg shadow">
+                    <h3 class="text-lg font-semibold mb-4 text-center">PSNR & Entropy Scores</h3>
+                    <div class="h-64">
+                        <canvas id="metrics-chart"></canvas>
+                    </div>
+                </div>
+                
+                <!-- Pie Chart - Pixel Distribution -->
+                <div class="bg-gray-50 p-4 rounded-lg shadow">
+                    <h3 class="text-lg font-semibold mb-4 text-center">Pixel Value Distribution</h3>
+                    <div class="h-64">
+                        <canvas id="distribution-chart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- About Section -->
+        <div id="about" class="bg-white rounded-lg shadow-lg p-6 mb-8">
+            <h2 class="text-2xl font-bold text-center text-gray-800 mb-4">About EndCrypt</h2>
+            <div class="text-gray-700">
+                <p class="mb-3">EndCrypt uses advanced chaotic map algorithms to encrypt images, providing secure visual cryptography. The main techniques used are:</p>
+                <ul class="list-disc pl-6 mb-4">
+                    <li class="mb-2"><strong>Arnold Cat Map:</strong> A spatial transform that shuffles the pixels of an image in a chaotic yet reversible manner.</li>
+                    <li class="mb-2"><strong>Logistic Map:</strong> A non-linear chaotic system used to generate pseudo-random sequences for encryption.</li>
+                    <li class="mb-2"><strong>Sine Map:</strong> Another chaotic map used to enhance the randomness of the encryption process.</li>
+                </ul>
+                <p>Multiple encryption levels apply different iterations and complexity to the encryption process, allowing you to choose the balance between security and performance.</p>
+            </div>
+        </div>
+        
+        <!-- Contact Section -->
+        <div id="contact" class="bg-white rounded-lg shadow-lg p-6">
+            <h2 class="text-2xl font-bold text-center text-gray-800 mb-4">Contact</h2>
+            <div class="text-center text-gray-700">
+                <p class="mb-4">For inquiries and support, please reach out to us:</p>
+                <p class="mb-2"><i class="fas fa-envelope mr-2 text-blue-600"></i> contact - siddhvaskar07@gmail.com</p>
+                <p><i class="fas fa-globe mr-2 text-blue-600"></i><href ="https://www.linkedin.com/in/siddharth-vaskar-689823314/">linkedin</href></p>
+            </div>
+            <div class="mt-6 text-center">
+                <p class="text-sm text-gray-500">© 2025 EndCrypt by siddvaskar. All rights reserved.</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
